@@ -2,8 +2,7 @@ import shortuuid
 import datetime
 import re
 import json
-import time
-
+import os
 def validate_date(data_str):
     if isinstance(data_str, datetime.datetime):
         if data_str <= datetime.datetime.now():
@@ -56,7 +55,7 @@ class Logger:
 
     def log(self, level, message):
         entry = {
-            "ts": time.time(),
+            "ts": datetime.datetime.now(),
             "level": level,
             "message": message
         }
@@ -79,7 +78,7 @@ class Logger:
 
 class Task:
     def __init__(self, title, description="", due_date=None, priority=3):
-        self.id = shortuuid.random(length=4)
+        self.id = shortuuid.random(length=8)
         self.created_at = datetime.datetime.now()
         self.title = validate_title(title)
         self.description = description
@@ -227,8 +226,9 @@ class FileHandler:
             json.dump(data, f, indent=2)
 
 def main():
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    filepath = os.path.join(BASE_DIR, 'tasks.json')
     logger = Logger()
-    filepath = 'tasks.json'
     file_handler = FileHandler(filepath)
     task_manager = TaskManager(logger, file_handler)
 
@@ -243,14 +243,19 @@ def main():
         choice = input("Enter your choice: ").strip()
 
         if choice == '1':
-            title = input("Enter task title: ").strip()
-            description = input("Enter task description: ").strip()
-            due_date = input("Enter due date (e.g., '5d', '2023-12-31'): ").strip()
-            priority = int(input("Enter priority: ").strip())
-            task = task_manager.add_task(title, description, due_date, priority)
-            print(f"Task added with Id: {task.id}")
+            try:
+                title = input("Enter task title: ").strip()
+                description = input("Enter task description: ").strip()
+                due_date = input("Enter due date: ").strip()
+                priority = int(input("Enter priority: ").strip())
 
-        if choice == '2':
+                task = task_manager.add_task(title, description, due_date, priority)
+                print(f"Task added with Id: {task.id}")
+
+            except ValueError as e:
+                print(f"Error: {e}")
+
+        elif choice == '2':
             tasks = task_manager.list_task()
             for task in tasks:
                 print(f"  [{task.id}] {task.title} (P:{task.priority}, {task.status})")
@@ -266,7 +271,13 @@ def main():
             status = input("Enter new status or blank: ").strip()
             priority = input("Enter new priority or blank: ").strip()
             due_date = input("Enter new due date or blank: ").strip()
-            task = task_manager.update_task(task_id,title,status,int(priority),due_date)
+            task_manager.update_task(
+                            task_id,
+                            title=title,
+                            status=status,
+                            priority=int(priority) ,
+                            due_date=due_date 
+                        )
 
         elif choice == "5":
             task_id = input("Task ID: ")
@@ -285,6 +296,10 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# bug fix:
+# Here when i create second task it is not stored inside the json file. 
+# When i create a task with not a valid due date it does not show error message instead it reruns the while loop of main function.
 
 # Questions
 # 1. When to use classmethod vs instance method in Python?
