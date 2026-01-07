@@ -161,7 +161,7 @@ class TaskManager:
 
             self.logger.log('INFO',f"task updated: {task_id}")
             self.save_task()
-            return True
+            return task
 
         except ValueError as e:
             self.logger.log('ERROR',f"Error updating task {task_id}: {e}")
