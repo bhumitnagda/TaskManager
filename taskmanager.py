@@ -300,10 +300,3 @@ if __name__ == "__main__":
 # bug fix:
 # Here when i create second task it is not stored inside the json file. 
 # When i create a task with not a valid due date it does not show error message instead it reruns the while loop of main function.
-
-# Questions
-# 1. When to use classmethod vs instance method in Python?
-# A classmethod is used when you need to access or modify class state that applies across all instances of the class. It takes the class itself as the first argument (usually named 'cls'). Instance methods, on the other hand, operate on individual instances of the class and take 'self' as the first argument, allowing access to instance-specific data. Use classmethods for factory methods or when you need to work with class-level data, and use instance methods for operations that pertain to a specific object instance.
-
-# 2. Why have use classmethod in the above code instead of instance method?
-# In the above code, the `from_dict` method is defined as a classmethod because it is intended to create or modify an instance of the `Task` class based on a dictionary of data. By using a classmethod, we can call this method without needing an existing instance of the class. If it were an instance method, we would need to have an instance of `Task` already created to call it, which would not be practical for the purpose of creating or populating a new instance from data.
